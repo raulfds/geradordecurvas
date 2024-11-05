@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  input[type="number"] {
+    @apply px-3 py-2;
+  }
+}
+
+.chart-container {
+  @apply bg-white p-6 rounded-lg shadow-md;
+}
