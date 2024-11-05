@@ -39,7 +39,7 @@ function App() {
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-900">
-            Gerador de Curva de Seleção de Bombas
+            Gerador de Curvas
           </h1>
           <p className="mt-2 text-gray-600">
             Insira os dados das bombas para gerar a curva de seleção
