@@ -32,7 +32,7 @@ export function PumpChart({ pumps }: PumpChartProps) {
     const steps = 20; // Increased steps for smoother curve
     
     // Starting point (max height, min flow)
-    const startFlow = pump.minFlow || 0;
+    const startFlow = pump.minFlow ;
     const startHeight = pump.maxHeight;
     
     // Generate quadratic curve points
