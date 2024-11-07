@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -23,10 +23,14 @@ ChartJS.register(
 );
 
 interface PumpChartProps {
-  pumps: PumpData[];
+  initialPumps?: PumpData[];
 }
 
-export function PumpChart({ pumps }: PumpChartProps) {
+export function PumpChart({ initialPumps = [] }: PumpChartProps) {
+  // Estado para armazenar as bombas adicionadas
+  const [pumps, setPumps] = useState<PumpData[]>(initialPumps);
+
+  // Função para gerar pontos para a curva de uma bomba
   const generatePoints = (pump: PumpData) => {
     const points = [];
     const steps = 20;
@@ -45,6 +49,7 @@ export function PumpChart({ pumps }: PumpChartProps) {
     return points;
   };
 
+  // Configurações para o gráfico
   const data = {
     datasets: pumps.map((pump) => ({
       label: pump.name,
@@ -124,23 +129,27 @@ export function PumpChart({ pumps }: PumpChartProps) {
 
   // Geração da tabela com base nos dados das bombas
   const generateTableData = () => {
-    const heights = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; // Alturas em m.c.a.
+    const heights = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
     return pumps.map((pump) => {
       return {
         name: pump.name,
         data: heights.map((height) => {
-          // Interpolação linear aproximada entre vazão mínima e máxima com base na altura
           if (height >= pump.minHeight && height <= pump.maxHeight) {
             const flow = pump.maxFlow - ((pump.maxFlow - pump.minFlow) * (height - pump.minHeight)) / (pump.maxHeight - pump.minHeight);
             return flow.toFixed(1);
           }
-          return '*'; // Marcar com asterisco para alturas fora do alcance
+          return '*';
         }),
       };
     });
   };
 
   const tableData = generateTableData();
+
+  // Função para adicionar uma nova bomba ao estado
+  const addPump = (newPump: PumpData) => {
+    setPumps((prevPumps) => [...prevPumps, newPump]);
+  };
 
   return (
     <div className="w-full p-6 rounded-lg shadow-md">
@@ -149,7 +158,24 @@ export function PumpChart({ pumps }: PumpChartProps) {
         <Line options={options} data={data} />
       </div>
 
-      {/* Tabela de características hidráulicas abaixo do gráfico */}
+      {/* Botão para gerar/adicionar uma bomba */}
+      <button
+        onClick={() =>
+          addPump({
+            name: 'Nova Bomba',
+            minFlow: 2.3,
+            maxFlow: 7.5,
+            minHeight: 2,
+            maxHeight: 11,
+            color: 'rgba(54, 162, 235, 1)',
+          })
+        }
+        className="bg-blue-500 text-white px-4 py-2 rounded mb-6 hover:bg-blue-600"
+      >
+        Gerar Bomba
+      </button>
+
+      {/* Tabela de características hidráulicas */}
       <div className="mt-8">
         <h3 className="font-semibold text-center mb-4">Características Hidráulicas</h3>
         <table className="min-w-full border border-gray-300 text-center">
@@ -159,8 +185,8 @@ export function PumpChart({ pumps }: PumpChartProps) {
             </tr>
             <tr className="bg-blue-100">
               <th className="border px-2 py-1">Bomba</th>
-              {heights.map((height) => (
-                <th key={height} className="border px-2 py-1">{height}</th>
+              {tableData[0]?.data.map((_, index) => (
+                <th key={index} className="border px-2 py-1">{2 + index}</th>
               ))}
             </tr>
           </thead>
