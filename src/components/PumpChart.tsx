@@ -29,7 +29,7 @@ interface PumpChartProps {
 export function PumpChart({ pumps }: PumpChartProps) {
   const generatePoints = (pump: PumpData) => {
     const points = [];
-    const steps = 20; // Número de passos para suavizar a curva
+    const steps = 20;
 
     const startFlow = pump.minFlow;
     const startHeight = pump.maxHeight;
@@ -38,13 +38,13 @@ export function PumpChart({ pumps }: PumpChartProps) {
       const t = i / steps;
       const flow = startFlow + (pump.maxFlow - startFlow) * t;
       const height = startHeight - (startHeight - pump.minHeight) * Math.pow(t, 1.5);
-      
+
       points.push({ x: flow, y: height });
     }
 
     return points;
   };
-  
+
   const data = {
     datasets: pumps.map((pump) => ({
       label: pump.name,
@@ -122,6 +122,26 @@ export function PumpChart({ pumps }: PumpChartProps) {
     },
   };
 
+  // Geração da tabela com base nos dados das bombas
+  const generateTableData = () => {
+    const heights = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; // Alturas em m.c.a.
+    return pumps.map((pump) => {
+      return {
+        name: pump.name,
+        data: heights.map((height) => {
+          // Interpolação linear aproximada entre vazão mínima e máxima com base na altura
+          if (height >= pump.minHeight && height <= pump.maxHeight) {
+            const flow = pump.maxFlow - ((pump.maxFlow - pump.minFlow) * (height - pump.minHeight)) / (pump.maxHeight - pump.minHeight);
+            return flow.toFixed(1);
+          }
+          return '*'; // Marcar com asterisco para alturas fora do alcance
+        }),
+      };
+    });
+  };
+
+  const tableData = generateTableData();
+
   return (
     <div className="w-full p-6 rounded-lg shadow-md">
       {/* Container do gráfico */}
@@ -132,28 +152,36 @@ export function PumpChart({ pumps }: PumpChartProps) {
       {/* Tabela de características hidráulicas abaixo do gráfico */}
       <div className="mt-8">
         <h3 className="font-semibold text-center mb-4">Características Hidráulicas</h3>
-        <table className="min-w-full border border-gray-300 text-center mt-2">
+        <table className="min-w-full border border-gray-300 text-center">
           <thead>
             <tr className="bg-blue-200">
-              <th className="border px-4 py-2" colSpan={10}>Altura Manométrica Total (m.c.a.)</th>
+              <th className="border px-4 py-2" colSpan={11}>Altura Manométrica Total (m.c.a.)</th>
             </tr>
             <tr className="bg-blue-100">
-              {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((height) => (
+              <th className="border px-2 py-1">Bomba</th>
+              {heights.map((height) => (
                 <th key={height} className="border px-2 py-1">{height}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            <tr className="bg-gray-100">
-              {[7.5, 6.8, 6.1, 5.5, 5.0, 4.5, 4.0, 3.5, 3.0, 2.3].map((flow, index) => (
-                <td key={index} className="border px-2 py-1">{flow.toFixed(1)}</td>
-              ))}
-            </tr>
+            {tableData.map((pumpData) => (
+              <tr key={pumpData.name} className="bg-gray-100">
+                <td className="border px-2 py-1 font-semibold">{pumpData.name}</td>
+                {pumpData.data.map((flow, index) => (
+                  <td key={index} className="border px-2 py-1">{flow}</td>
+                ))}
+              </tr>
+            ))}
           </tbody>
+          <tfoot>
+            <tr className="bg-blue-200">
+              <td colSpan={11} className="border-t-2 border-blue-200 px-4 py-2 font-semibold">
+                Vazão em m³/h válida para sucção de 0 m.c.a.
+              </td>
+            </tr>
+          </tfoot>
         </table>
-        <p className="text-center text-gray-500 text-sm mt-2">
-          Vazão em m³/h válida para sucção de 0 m.c.a.
-        </p>
       </div>
     </div>
   );
