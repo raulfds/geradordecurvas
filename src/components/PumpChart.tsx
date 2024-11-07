@@ -35,16 +35,7 @@ export function PumpChart({ pumps }: PumpChartProps) {
     const startFlow = pump.minFlow ;
     const startHeight = pump.maxHeight;
     
-    // Generate quadratic curve points
-    for (let i = 0; i <= steps; i++) {
-      const t = i / steps;
-      const flow = startFlow + (pump.maxFlow - startFlow) * t;
-      
-      // Quadratic curve formula for more realistic pump curve
-      const height = startHeight * (1 - Math.pow(t, 1.5));
-      
-      points.push({ x: flow, y: height });
-    }
+  
 
     return points;
   };
