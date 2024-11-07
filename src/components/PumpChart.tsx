@@ -129,12 +129,15 @@ export function PumpChart({ pumps }: PumpChartProps) {
   };
 
   return (
-    <div className="h-[600px] w-full bg-white p-6 rounded-lg shadow-md">
-      <Line options={options} data={data} />
+    <div className="w-full p-6 rounded-lg shadow-md">
+      {/* Container do gráfico */}
+      <div className="h-[600px] bg-white p-6 rounded-lg shadow-md mb-6">
+        <Line options={options} data={data} />
+      </div>
 
       {/* Tabela de características hidráulicas abaixo do gráfico */}
-      <div className="my-4">
-        <h3 className="font-semibold text-center">Características Hidráulicas</h3>
+      <div className="mt-8">
+        <h3 className="font-semibold text-center mb-4">Características Hidráulicas</h3>
         <table className="min-w-full border border-gray-300 text-center mt-2">
           <thead>
             <tr className="bg-blue-200">
