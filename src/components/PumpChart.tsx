@@ -29,27 +29,28 @@ interface PumpChartProps {
 export function PumpChart({ pumps }: PumpChartProps) {
   const generatePoints = (pump: PumpData) => {
     const points = [];
-    const steps = 20; // Increased steps for smoother curve
-    
-    // Starting point (max height, min flow)
-    const startFlow = pump.minFlow ;
+    const steps = 20; // Número de passos para suavizar a curva
+
+    // Ponto inicial ajustado para começar em minFlow e maxHeight
+    const startFlow = pump.minFlow;
     const startHeight = pump.maxHeight;
-    
-      // Generate quadratic curve points
-      for (let i = 0; i <= steps; i++) {
-        const t = i / steps;
-        const flow = startFlow + (pump.maxFlow - startFlow) * t;
-        
-        // Quadratic curve formula for more realistic pump curve
-        const height = startHeight * (1 - Math.pow(t, 1.5));
-        
-        points.push({ x: flow, y: height });
-      }
-  
+
+    // Gerando pontos para a curva
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      
+      // Calcular o fluxo com base no intervalo de minFlow a maxFlow
+      const flow = startFlow + (pump.maxFlow - startFlow) * t;
+      
+      // Calcular a altura com base em uma curva quadrática invertida
+      const height = startHeight - (startHeight - pump.minHeight) * Math.pow(t, 1.5);
+      
+      points.push({ x: flow, y: height });
+    }
 
     return points;
   };
-
+  
   const data = {
     datasets: pumps.map((pump) => ({
       label: pump.name,
