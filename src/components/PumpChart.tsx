@@ -128,9 +128,42 @@ export function PumpChart({ pumps }: PumpChartProps) {
     },
   };
 
+  // Função para renderizar a tabela de pontos para cada bomba
+  const renderTable = (points, pumpName) => (
+    <div className="my-4">
+      <h3 className="font-semibold mb-2">Tabela de Pontos - {pumpName}</h3>
+      <table className="min-w-full border border-gray-300 text-center">
+        <thead>
+          <tr>
+            <th className="border px-4 py-2">Fluxo (m³/h)</th>
+            <th className="border px-4 py-2">Altura (m.c.a)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {points.map((point, index) => (
+            <tr key={index}>
+              <td className="border px-4 py-2">{point.x.toFixed(2)}</td>
+              <td className="border px-4 py-2">{point.y.toFixed(2)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
   return (
     <div className="h-[600px] w-full bg-white p-6 rounded-lg shadow-md">
       <Line options={options} data={data} />
+      
+      {/* Renderizar a tabela de pontos para cada bomba */}
+      {pumps.map((pump, index) => {
+        const points = generatePoints(pump);
+        return (
+          <div key={index} className="pump-chart">
+            {renderTable(points, pump.name)}
+          </div>
+        );
+      })}
     </div>
   );
 }
