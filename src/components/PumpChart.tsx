@@ -31,18 +31,12 @@ export function PumpChart({ pumps }: PumpChartProps) {
     const points = [];
     const steps = 20; // Número de passos para suavizar a curva
 
-    // Ponto inicial ajustado para começar em minFlow e maxHeight
     const startFlow = pump.minFlow;
     const startHeight = pump.maxHeight;
 
-    // Gerando pontos para a curva
     for (let i = 0; i <= steps; i++) {
       const t = i / steps;
-      
-      // Calcular o fluxo com base no intervalo de minFlow a maxFlow
       const flow = startFlow + (pump.maxFlow - startFlow) * t;
-      
-      // Calcular a altura com base em uma curva quadrática invertida
       const height = startHeight - (startHeight - pump.minHeight) * Math.pow(t, 1.5);
       
       points.push({ x: flow, y: height });
@@ -91,7 +85,7 @@ export function PumpChart({ pumps }: PumpChartProps) {
         callbacks: {
           label: (context) => {
             const point = context.raw as { x: number; y: number };
-            return `${context.dataset.label}: ${point.y.toFixed(1)}m @ ${point.x.toFixed(1)}L/h`;
+            return `${context.dataset.label}: ${point.y.toFixed(1)}m @ ${point.x.toFixed(1)}m³/h`;
           },
         },
       },
@@ -141,31 +135,20 @@ export function PumpChart({ pumps }: PumpChartProps) {
         <table className="min-w-full border border-gray-300 text-center mt-2">
           <thead>
             <tr className="bg-blue-200">
-              <th className="border px-4 py-2" colSpan={13}>Altura Manométrica Total (m.c.a.)</th>
+              <th className="border px-4 py-2" colSpan={10}>Altura Manométrica Total (m.c.a.)</th>
             </tr>
             <tr className="bg-blue-100">
-              {Array.from({ length: 13 }, (_, i) => (
-                <th key={i} className="border px-2 py-1">{2 + i * 2}</th>
+              {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((height) => (
+                <th key={height} className="border px-2 py-1">{height}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             <tr className="bg-gray-100">
-              <td className="border px-2 py-1">7.5</td>
-              <td className="border px-2 py-1">7.7</td>
-              <td className="border px-2 py-1">7.9</td>
-              <td className="border px-2 py-1">7.5</td>
-              <td className="border px-2 py-1">7.3</td>
-              <td className="border px-2 py-1">7.1</td>
-              <td className="border px-2 py-1">6.7</td>
-              <td className="border px-2 py-1">6.5</td>
-              <td className="border px-2 py-1">6.1</td>
-              <td className="border px-2 py-1">5.8</td>
-              <td className="border px-2 py-1">5.6</td>
-              <td className="border px-2 py-1">5.4</td>
-              <td className="border px-2 py-1">5.2</td>
+              {[7.5, 6.8, 6.1, 5.5, 5.0, 4.5, 4.0, 3.5, 3.0, 2.3].map((flow, index) => (
+                <td key={index} className="border px-2 py-1">{flow.toFixed(1)}</td>
+              ))}
             </tr>
-            {/* Adicione mais linhas conforme necessário para representar outros dados de vazão */}
           </tbody>
         </table>
         <p className="text-center text-gray-500 text-sm mt-2">
