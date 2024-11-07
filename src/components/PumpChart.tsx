@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -27,12 +27,9 @@ interface PumpChartProps {
 }
 
 export function PumpChart({ pumps }: PumpChartProps) {
-  const [showTable, setShowTable] = useState(false);
-
-  // Função para gerar pontos da curva para cada bomba (sem alterações)
   const generatePoints = (pump: PumpData) => {
     const points = [];
-    const steps = 20;
+    const steps = 20; // Número de passos para suavizar a curva
 
     const startFlow = pump.minFlow;
     const startHeight = pump.maxHeight;
@@ -41,14 +38,13 @@ export function PumpChart({ pumps }: PumpChartProps) {
       const t = i / steps;
       const flow = startFlow + (pump.maxFlow - startFlow) * t;
       const height = startHeight - (startHeight - pump.minHeight) * Math.pow(t, 1.5);
-
+      
       points.push({ x: flow, y: height });
     }
 
     return points;
   };
-
-  // Dados para o gráfico
+  
   const data = {
     datasets: pumps.map((pump) => ({
       label: pump.name,
@@ -126,76 +122,39 @@ export function PumpChart({ pumps }: PumpChartProps) {
     },
   };
 
-  // Função para gerar os dados da tabela
-  const generateTableData = () => {
-    const heights = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-    return pumps.map((pump) => ({
-      name: pump.name,
-      data: heights.map((height) => {
-        if (height >= pump.minHeight && height <= pump.maxHeight) {
-          const flow = pump.maxFlow - ((pump.maxFlow - pump.minFlow) * (height - pump.minHeight)) / (pump.maxHeight - pump.minHeight);
-          return flow.toFixed(1);
-        }
-        return '*';
-      }),
-    }));
-  };
-
-  const tableData = generateTableData();
-
   return (
     <div className="w-full p-6 rounded-lg shadow-md">
-      {/* Gráfico da Curva */}
+      {/* Container do gráfico */}
       <div className="h-[600px] bg-white p-6 rounded-lg shadow-md mb-6">
         <Line options={options} data={data} />
       </div>
 
-      {/* Botão para exibir a tabela */}
-      <button
-        onClick={() => setShowTable((prev) => !prev)}
-        className="bg-blue-500 text-white px-4 py-2 rounded mb-6 hover:bg-blue-600"
-      >
-        {showTable ? 'Ocultar Tabela' : 'Exibir Tabela'}
-      </button>
-
-      {/* Tabela de características hidráulicas */}
-      {showTable && (
-        <div className="mt-8">
-          <h3 className="font-semibold text-center mb-4">Características Hidráulicas</h3>
-          <table className="min-w-full border border-gray-300 text-center">
-            <thead>
-              <tr className="bg-blue-200">
-                <th className="border px-4 py-2" colSpan={11}>
-                  Altura Manométrica Total (m.c.a.)
-                </th>
-              </tr>
-              <tr className="bg-blue-100">
-                <th className="border px-2 py-1">Bomba</th>
-                {tableData[0]?.data.map((_, index) => (
-                  <th key={index} className="border px-2 py-1">{2 + index}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {tableData.map((pumpData) => (
-                <tr key={pumpData.name} className="bg-gray-100">
-                  <td className="border px-2 py-1 font-semibold">{pumpData.name}</td>
-                  {pumpData.data.map((flow, index) => (
-                    <td key={index} className="border px-2 py-1">{flow}</td>
-                  ))}
-                </tr>
+      {/* Tabela de características hidráulicas abaixo do gráfico */}
+      <div className="mt-8">
+        <h3 className="font-semibold text-center mb-4">Características Hidráulicas</h3>
+        <table className="min-w-full border border-gray-300 text-center mt-2">
+          <thead>
+            <tr className="bg-blue-200">
+              <th className="border px-4 py-2" colSpan={10}>Altura Manométrica Total (m.c.a.)</th>
+            </tr>
+            <tr className="bg-blue-100">
+              {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((height) => (
+                <th key={height} className="border px-2 py-1">{height}</th>
               ))}
-            </tbody>
-            <tfoot>
-              <tr className="bg-blue-200">
-                <td colSpan={11} className="border-t-2 border-blue-200 px-4 py-2 font-semibold">
-                  Vazão em m³/h válida para sucção de 0 m.c.a.
-                </td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      )}
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="bg-gray-100">
+              {[7.5, 6.8, 6.1, 5.5, 5.0, 4.5, 4.0, 3.5, 3.0, 2.3].map((flow, index) => (
+                <td key={index} className="border px-2 py-1">{flow.toFixed(1)}</td>
+              ))}
+            </tr>
+          </tbody>
+        </table>
+        <p className="text-center text-gray-500 text-sm mt-2">
+          Vazão em m³/h válida para sucção de 0 m.c.a.
+        </p>
+      </div>
     </div>
   );
 }
