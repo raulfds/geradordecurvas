@@ -128,42 +128,47 @@ export function PumpChart({ pumps }: PumpChartProps) {
     },
   };
 
-  // Função para renderizar a tabela de pontos para cada bomba
-  const renderTable = (points, pumpName) => (
-    <div className="my-4">
-      <h3 className="font-semibold mb-2">Tabela de Pontos - {pumpName}</h3>
-      <table className="min-w-full border border-gray-300 text-center">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2">Fluxo (m³/h)</th>
-            <th className="border px-4 py-2">Altura (m.c.a)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {points.map((point, index) => (
-            <tr key={index}>
-              <td className="border px-4 py-2">{point.x.toFixed(2)}</td>
-              <td className="border px-4 py-2">{point.y.toFixed(2)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-
   return (
     <div className="h-[600px] w-full bg-white p-6 rounded-lg shadow-md">
       <Line options={options} data={data} />
-      
-      {/* Renderizar a tabela de pontos para cada bomba */}
-      {pumps.map((pump, index) => {
-        const points = generatePoints(pump);
-        return (
-          <div key={index} className="pump-chart">
-            {renderTable(points, pump.name)}
-          </div>
-        );
-      })}
+
+      {/* Tabela de características hidráulicas abaixo do gráfico */}
+      <div className="my-4">
+        <h3 className="font-semibold text-center">Características Hidráulicas</h3>
+        <table className="min-w-full border border-gray-300 text-center mt-2">
+          <thead>
+            <tr className="bg-blue-200">
+              <th className="border px-4 py-2" colSpan={13}>Altura Manométrica Total (m.c.a.)</th>
+            </tr>
+            <tr className="bg-blue-100">
+              {Array.from({ length: 13 }, (_, i) => (
+                <th key={i} className="border px-2 py-1">{2 + i * 2}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="bg-gray-100">
+              <td className="border px-2 py-1">7.5</td>
+              <td className="border px-2 py-1">7.7</td>
+              <td className="border px-2 py-1">7.9</td>
+              <td className="border px-2 py-1">7.5</td>
+              <td className="border px-2 py-1">7.3</td>
+              <td className="border px-2 py-1">7.1</td>
+              <td className="border px-2 py-1">6.7</td>
+              <td className="border px-2 py-1">6.5</td>
+              <td className="border px-2 py-1">6.1</td>
+              <td className="border px-2 py-1">5.8</td>
+              <td className="border px-2 py-1">5.6</td>
+              <td className="border px-2 py-1">5.4</td>
+              <td className="border px-2 py-1">5.2</td>
+            </tr>
+            {/* Adicione mais linhas conforme necessário para representar outros dados de vazão */}
+          </tbody>
+        </table>
+        <p className="text-center text-gray-500 text-sm mt-2">
+          Vazão em m³/h válida para sucção de 0 m.c.a.
+        </p>
+      </div>
     </div>
   );
 }
