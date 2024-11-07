@@ -23,14 +23,13 @@ ChartJS.register(
 );
 
 interface PumpChartProps {
-  initialPumps?: PumpData[];
+  pumps: PumpData[];
 }
 
-export function PumpChart({ initialPumps = [] }: PumpChartProps) {
-  // Estado para armazenar as bombas adicionadas
-  const [pumps, setPumps] = useState<PumpData[]>(initialPumps);
+export function PumpChart({ pumps }: PumpChartProps) {
+  const [showTable, setShowTable] = useState(false);
 
-  // Função para gerar pontos para a curva de uma bomba
+  // Função para gerar pontos da curva para cada bomba (sem alterações)
   const generatePoints = (pump: PumpData) => {
     const points = [];
     const steps = 20;
@@ -49,7 +48,7 @@ export function PumpChart({ initialPumps = [] }: PumpChartProps) {
     return points;
   };
 
-  // Configurações para o gráfico
+  // Dados para o gráfico
   const data = {
     datasets: pumps.map((pump) => ({
       label: pump.name,
@@ -127,88 +126,76 @@ export function PumpChart({ initialPumps = [] }: PumpChartProps) {
     },
   };
 
-  // Geração da tabela com base nos dados das bombas
+  // Função para gerar os dados da tabela
   const generateTableData = () => {
     const heights = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-    return pumps.map((pump) => {
-      return {
-        name: pump.name,
-        data: heights.map((height) => {
-          if (height >= pump.minHeight && height <= pump.maxHeight) {
-            const flow = pump.maxFlow - ((pump.maxFlow - pump.minFlow) * (height - pump.minHeight)) / (pump.maxHeight - pump.minHeight);
-            return flow.toFixed(1);
-          }
-          return '*';
-        }),
-      };
-    });
+    return pumps.map((pump) => ({
+      name: pump.name,
+      data: heights.map((height) => {
+        if (height >= pump.minHeight && height <= pump.maxHeight) {
+          const flow = pump.maxFlow - ((pump.maxFlow - pump.minFlow) * (height - pump.minHeight)) / (pump.maxHeight - pump.minHeight);
+          return flow.toFixed(1);
+        }
+        return '*';
+      }),
+    }));
   };
 
   const tableData = generateTableData();
 
-  // Função para adicionar uma nova bomba ao estado
-  const addPump = (newPump: PumpData) => {
-    setPumps((prevPumps) => [...prevPumps, newPump]);
-  };
-
   return (
     <div className="w-full p-6 rounded-lg shadow-md">
-      {/* Container do gráfico */}
+      {/* Gráfico da Curva */}
       <div className="h-[600px] bg-white p-6 rounded-lg shadow-md mb-6">
         <Line options={options} data={data} />
       </div>
 
-      {/* Botão para gerar/adicionar uma bomba */}
+      {/* Botão para exibir a tabela */}
       <button
-        onClick={() =>
-          addPump({
-            name: 'Nova Bomba',
-            minFlow: 2.3,
-            maxFlow: 7.5,
-            minHeight: 2,
-            maxHeight: 11,
-            color: 'rgba(54, 162, 235, 1)',
-          })
-        }
+        onClick={() => setShowTable((prev) => !prev)}
         className="bg-blue-500 text-white px-4 py-2 rounded mb-6 hover:bg-blue-600"
       >
-        Gerar Bomba
+        {showTable ? 'Ocultar Tabela' : 'Exibir Tabela'}
       </button>
 
       {/* Tabela de características hidráulicas */}
-      <div className="mt-8">
-        <h3 className="font-semibold text-center mb-4">Características Hidráulicas</h3>
-        <table className="min-w-full border border-gray-300 text-center">
-          <thead>
-            <tr className="bg-blue-200">
-              <th className="border px-4 py-2" colSpan={11}>Altura Manométrica Total (m.c.a.)</th>
-            </tr>
-            <tr className="bg-blue-100">
-              <th className="border px-2 py-1">Bomba</th>
-              {tableData[0]?.data.map((_, index) => (
-                <th key={index} className="border px-2 py-1">{2 + index}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {tableData.map((pumpData) => (
-              <tr key={pumpData.name} className="bg-gray-100">
-                <td className="border px-2 py-1 font-semibold">{pumpData.name}</td>
-                {pumpData.data.map((flow, index) => (
-                  <td key={index} className="border px-2 py-1">{flow}</td>
+      {showTable && (
+        <div className="mt-8">
+          <h3 className="font-semibold text-center mb-4">Características Hidráulicas</h3>
+          <table className="min-w-full border border-gray-300 text-center">
+            <thead>
+              <tr className="bg-blue-200">
+                <th className="border px-4 py-2" colSpan={11}>
+                  Altura Manométrica Total (m.c.a.)
+                </th>
+              </tr>
+              <tr className="bg-blue-100">
+                <th className="border px-2 py-1">Bomba</th>
+                {tableData[0]?.data.map((_, index) => (
+                  <th key={index} className="border px-2 py-1">{2 + index}</th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr className="bg-blue-200">
-              <td colSpan={11} className="border-t-2 border-blue-200 px-4 py-2 font-semibold">
-                Vazão em m³/h válida para sucção de 0 m.c.a.
-              </td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {tableData.map((pumpData) => (
+                <tr key={pumpData.name} className="bg-gray-100">
+                  <td className="border px-2 py-1 font-semibold">{pumpData.name}</td>
+                  {pumpData.data.map((flow, index) => (
+                    <td key={index} className="border px-2 py-1">{flow}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr className="bg-blue-200">
+                <td colSpan={11} className="border-t-2 border-blue-200 px-4 py-2 font-semibold">
+                  Vazão em m³/h válida para sucção de 0 m.c.a.
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
