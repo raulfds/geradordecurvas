@@ -151,7 +151,7 @@ export function PumpChart({ pumps }: PumpChartProps) {
             </tr>
           </tbody>
         </table>
-        <p className="text-center text-gray-500 text-sm mt-2">
+        <p className="font-semibold text-center text-gray-500 text-xl mt-2">
           Vazão em m³/h válida para sucção de 0 m.c.a.
         </p>
       </div>
