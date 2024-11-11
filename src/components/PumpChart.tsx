@@ -1,3 +1,5 @@
+"use client"
+
 import React from 'react';
 import {
   Chart as ChartJS,
@@ -122,6 +124,25 @@ export function PumpChart({ pumps }: PumpChartProps) {
     },
   };
 
+  // Função para obter a vazão para uma altura específica
+  const getFlowForHeight = (pump: PumpData, height: number) => {
+    const points = generatePoints(pump);
+    const closestPoint = points.reduce((prev, curr) => 
+      Math.abs(curr.y - height) < Math.abs(prev.y - height) ? curr : prev
+    );
+    return closestPoint.x;
+  };
+
+  // Encontrar o menor e o maior valor de altura manométrica entre todas as bombas
+  const minHeight = Math.min(...pumps.map(pump => pump.minHeight));
+  const maxHeight = Math.max(...pumps.map(pump => pump.maxHeight));
+
+  // Gerar alturas para a tabela
+  const tableHeights = Array.from(
+    { length: Math.ceil((maxHeight - minHeight) / 0.5) + 1 },
+    (_, i) => Number((minHeight + i * 0.5).toFixed(1))
+  );
+
   return (
     <div className="w-full p-6 rounded-lg shadow-md">
       {/* Container do gráfico */}
@@ -130,25 +151,34 @@ export function PumpChart({ pumps }: PumpChartProps) {
       </div>
 
       {/* Tabela de características hidráulicas abaixo do gráfico */}
-      <div className="mt-8">
+      <div className="mt-8 overflow-x-auto">
         <h3 className="font-semibold text-center mb-4">Características Hidráulicas</h3>
         <table className="min-w-full border border-gray-300 text-center mt-2">
           <thead>
             <tr className="bg-blue-200">
-              <th className="border px-4 py-2" colSpan={10}>Altura Manométrica Total (m.c.a.)</th>
+              <th className="border px-4 py-2">Bomba</th>
+              <th className="border px-4 py-2" colSpan={tableHeights.length}>Altura Manométrica Total (m.c.a.)</th>
             </tr>
             <tr className="bg-blue-100">
-              {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((height) => (
+              <th></th>
+              {tableHeights.map((height) => (
                 <th key={height} className="border px-2 py-1">{height}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            <tr className="bg-gray-100">
-              {[7.5, 6.8, 6.1, 5.5, 5.0, 4.5, 4.0, 3.5, 3.0, 2.3].map((flow, index) => (
-                <td key={index} className="border px-2 py-1">{flow.toFixed(1)}</td>
-              ))}
-            </tr>
+            {pumps.map((pump, index) => (
+              <tr key={pump.name} className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}>
+                <td className="border px-2 py-1 font-semibold">{pump.name}</td>
+                {tableHeights.map((height) => (
+                  <td key={height} className="border px-2 py-1">
+                    {height >= pump.minHeight && height <= pump.maxHeight
+                      ? getFlowForHeight(pump, height).toFixed(1)
+                      : '-'}
+                  </td>
+                ))}
+              </tr>
+            ))}
           </tbody>
         </table>
         <p className="font-semibold text-center text-gray-500 text-lg mt-2">
