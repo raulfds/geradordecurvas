@@ -28,10 +28,10 @@ interface PumpChartProps {
   pumps: PumpData[];
 }
 
-export function PumpChart({ pumps }: PumpChartProps) {
+export default function PumpChart({ pumps }: PumpChartProps) {
   const generatePoints = (pump: PumpData) => {
     const points = [];
-    const steps = 20; // Número de passos para suavizar a curva
+    const steps = 20;
 
     const startFlow = pump.minFlow;
     const startHeight = pump.maxHeight;
@@ -124,7 +124,6 @@ export function PumpChart({ pumps }: PumpChartProps) {
     },
   };
 
-  // Função para obter a vazão para uma altura específica
   const getFlowForHeight = (pump: PumpData, height: number) => {
     const points = generatePoints(pump);
     const closestPoint = points.reduce((prev, curr) => 
@@ -133,55 +132,56 @@ export function PumpChart({ pumps }: PumpChartProps) {
     return closestPoint.x;
   };
 
-  // Encontrar o menor e o maior valor de altura manométrica entre todas as bombas
   const minHeight = Math.min(...pumps.map(pump => pump.minHeight));
   const maxHeight = Math.max(...pumps.map(pump => pump.maxHeight));
 
-  // Gerar alturas para a tabela
   const tableHeights = Array.from(
     { length: Math.ceil((maxHeight - minHeight) / 0.5) + 1 },
     (_, i) => Number((minHeight + i * 0.5).toFixed(1))
   );
 
   return (
-    <div className="w-full p-6 rounded-lg shadow-md">
-      {/* Container do gráfico */}
-      <div className="h-[600px] bg-white p-6 rounded-lg shadow-md mb-6">
+    <div className="w-full p-6 bg-white rounded-lg shadow-md">
+      <div className="h-[600px] mb-8">
         <Line options={options} data={data} />
       </div>
 
-      {/* Tabela de características hidráulicas abaixo do gráfico */}
-      <div className="mt-8 overflow-x-auto">
-        <h3 className="font-semibold text-center mb-4">Características Hidráulicas</h3>
-        <table className="min-w-full border border-gray-300 text-center mt-2">
-          <thead>
-            <tr className="bg-blue-200">
-              <th className="border px-4 py-2">Bomba</th>
-              <th className="border px-4 py-2" colSpan={tableHeights.length}>Altura Manométrica Total (m.c.a.)</th>
-            </tr>
-            <tr className="bg-blue-100">
-              <th></th>
-              {tableHeights.map((height) => (
-                <th key={height} className="border px-2 py-1">{height}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {pumps.map((pump, index) => (
-              <tr key={pump.name} className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}>
-                <td className="border px-2 py-1 font-semibold">{pump.name}</td>
+      <div className="mt-8">
+        <h3 className="text-2xl font-bold text-center mb-6 text-gray-800">Características Hidráulicas</h3>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse border border-gray-300">
+            <thead>
+              <tr className="bg-primary text-primary-foreground">
+                <th className="px-4 py-3 text-left font-semibold" rowSpan={2}>Bomba</th>
+                <th className="px-4 py-3 text-center font-semibold" colSpan={tableHeights.length}>
+                  Altura Manométrica Total (m.c.a.)
+                </th>
+              </tr>
+              <tr className="bg-primary/10">
                 {tableHeights.map((height) => (
-                  <td key={height} className="border px-2 py-1">
-                    {height >= pump.minHeight && height <= pump.maxHeight
-                      ? getFlowForHeight(pump, height).toFixed(1)
-                      : '-'}
-                  </td>
+                  <th key={height} className="px-3 py-2 text-center font-medium text-sm">
+                    {height}
+                  </th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
-        <p className="font-semibold text-center text-gray-500 text-lg mt-2">
+            </thead>
+            <tbody>
+              {pumps.map((pump, index) => (
+                <tr key={pump.name} className={index % 2 === 0 ? "bg-background" : "bg-muted/50"}>
+                  <td className="px-4 py-3 font-medium border-r border-gray-300">{pump.name}</td>
+                  {tableHeights.map((height) => (
+                    <td key={height} className="px-3 py-2 text-center border-r border-gray-300">
+                      {height >= pump.minHeight && height <= pump.maxHeight
+                        ? getFlowForHeight(pump, height).toFixed(1)
+                        : '-'}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-center text-muted-foreground text-sm mt-4">
           Vazão em m³/h válida para sucção de 0 m.c.a.
         </p>
       </div>
