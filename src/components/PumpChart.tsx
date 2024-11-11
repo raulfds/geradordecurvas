@@ -141,17 +141,17 @@ export default function PumpChart({ pumps }: PumpChartProps) {
   );
 
   return (
-    <div className="w-full p-6 bg-white rounded-lg shadow-md">
+    <div className="w-full p-6 bg-white rounded-lg shadow-md pump-chart">
       <div className="h-[600px] mb-8">
         <Line options={options} data={data} />
       </div>
 
-      <div className="mt-12"> {/* Update 4: Added more space between chart and table */}
-        <h3 className="text-xl font-semibold text-center mb-4 text-gray-800"> {/* Update 1: Updated title */} Características Hidráulicas</h3>
-        <div className="overflow-x-auto">
+      <div className="mt-12">
+        <h3 className="text-xl font-semibold text-center mb-4 text-gray-800">Características Hidráulicas</h3>
+        <div className="overflow-x-auto" style={{ maxWidth: '100%' }}>
           <table className="w-full border-collapse border border-gray-300">
             <thead>
-              <tr className="bg-primary text-primary-foreground"> {/* Update 2: Updated table header */}
+              <tr className="bg-primary text-primary-foreground">
                 <th className="px-4 py-3 text-left font-semibold text-sm" rowSpan={2}>Bomba</th>
                 <th className="px-4 py-3 text-center font-semibold text-sm" colSpan={tableHeights.length}>
                   Altura Manométrica Total (m.c.a.)
@@ -181,7 +181,7 @@ export default function PumpChart({ pumps }: PumpChartProps) {
             </tbody>
           </table>
         </div>
-        <p className="text-center text-sm text-gray-600 mt-4"> {/* Update 3: Updated footer note */} Vazão em m³/h válida para sucção de 0 m.c.a.</p>
+        <p className="text-center text-sm text-gray-600 mt-4">Vazão em m³/h válida para sucção de 0 m.c.a.</p>
       </div>
     </div>
   );
