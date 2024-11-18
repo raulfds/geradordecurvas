@@ -102,7 +102,7 @@ export default function PumpChart({ pumps }: PumpChartProps) {
           padding: 10,
         },
         grid: {
-          color: 'rgba(0, 0, 0, 0.1)',
+          color: 'black',
         },
         min: 0,
       },
@@ -113,7 +113,7 @@ export default function PumpChart({ pumps }: PumpChartProps) {
           padding: 10,
         },
         grid: {
-          color: 'rgba(0, 0, 0, 0.1)',
+          color: 'black',
         },
         min: 0,
       },
@@ -153,7 +153,7 @@ export default function PumpChart({ pumps }: PumpChartProps) {
             <thead>
               <tr className="bg-primary text-primary-foreground">
                 <th className="px-4 py-3 text-left font-semibold text-sm" rowSpan={2}>Bomba</th>
-                <th className="px-4 py-3 text-center justify-center font-semibold text-sm" colSpan={tableHeights.length}>
+                <th className="px-4 py-3 text-center font-semibold text-sm" colSpan={tableHeights.length}>
                   Altura Manométrica Total (m.c.a.)
                 </th>
               </tr>
@@ -181,7 +181,7 @@ export default function PumpChart({ pumps }: PumpChartProps) {
             </tbody>
           </table>
         </div>
-        <p className="text-center justify-center text-sm text-gray-600 mt-4 px-6">Vazão em m³/h válida para sucção de 0 m.c.a.</p>
+        <p className="text-center text-sm text-gray-600 mt-4 ">Vazão em m³/h válida para sucção de 0 m.c.a.</p>
       </div>
     </div>
   );
