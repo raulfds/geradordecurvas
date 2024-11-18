@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react';
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -33,13 +33,15 @@ export default function PumpChart({ pumps }: PumpChartProps) {
     const points = [];
     const steps = 20;
 
-    const startFlow = pump.minFlow;
-    const startHeight = pump.maxHeight;
+    const startFlow = pump.minFlow ?? 0; // Usa 0 se minFlow for undefined
+    const startHeight = pump.maxHeight ?? 0; // Usa 0 se maxHeight for undefined
+
 
     for (let i = 0; i <= steps; i++) {
       const t = i / steps;
       const flow = startFlow + (pump.maxFlow - startFlow) * t;
-      const height = startHeight - (startHeight - pump.minHeight) * Math.pow(t, 1.5);
+      const height = startHeight - (startHeight - (pump.minHeight ?? 0)) * Math.pow(t, 1.5);
+
       
       points.push({ x: flow, y: height });
     }
@@ -56,10 +58,11 @@ export default function PumpChart({ pumps }: PumpChartProps) {
       borderWidth: 2,
       tension: 0.4,
       fill: false,
-      pointRadius: (ctx) => {
+      pointRadius: (ctx: { dataIndex: number; dataset: { data: { length: number }[] } }) => {
         const index = ctx.dataIndex;
         return index === 0 || index === ctx.dataset.data.length - 1 ? 4 : 0;
       },
+      
     })),
   };
 
@@ -85,12 +88,13 @@ export default function PumpChart({ pumps }: PumpChartProps) {
       },
       tooltip: {
         callbacks: {
-          label: (context) => {
-            const point = context.raw as { x: number; y: number };
+          label: (context: { raw: { x: number; y: number }; dataset: { label: string } }) => {
+            const point = context.raw;
             return `${context.dataset.label}: ${point.y.toFixed(1)}m @ ${point.x.toFixed(1)}m³/h`;
           },
         },
       },
+      
     },
     scales: {
       x: {
@@ -134,8 +138,9 @@ export default function PumpChart({ pumps }: PumpChartProps) {
     },
     interaction: {
       intersect: false,
-      mode: 'nearest',
+      mode: 'nearest', // Valor aceito
     },
+    
   };
 
   const getFlowForHeight = (pump: PumpData, height: number) => {
@@ -143,8 +148,9 @@ export default function PumpChart({ pumps }: PumpChartProps) {
     const closestPoint = points.reduce((prev, curr) => 
       Math.abs(curr.y - height) < Math.abs(prev.y - height) ? curr : prev
     );
-    return closestPoint.x;
+    return closestPoint?.x ?? 0; // Usa 0 se closestPoint.x for undefined
   };
+  
 
   const minHeight = Math.min(...pumps.map(pump => pump.minHeight));
   const maxHeight = Math.max(...pumps.map(pump => pump.maxHeight));
