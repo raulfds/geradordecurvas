@@ -100,9 +100,16 @@ export default function PumpChart({ pumps }: PumpChartProps) {
           display: true,
           text: 'Vazão (m³/h)',
           padding: 10,
+          color: '#333333', // Cor do título do eixo
         },
         grid: {
-          color: 'black',
+          color: '#333333', // Cor mais escura para contraste
+          lineWidth: 1.5, // Aumente a espessura das linhas
+          borderDash: [5, 5], // Linhas tracejadas
+        },
+        ticks: {
+          stepSize: 5, // Ajusta os intervalos das linhas
+          color: '#333333', // Cor dos números do eixo
         },
         min: 0,
       },
@@ -111,9 +118,16 @@ export default function PumpChart({ pumps }: PumpChartProps) {
           display: true,
           text: 'Altura Manométrica (m.c.a)',
           padding: 10,
+          color: '#333333', // Cor do título do eixo
         },
         grid: {
-          color: 'black',
+          color: '#333333', // Cor mais escura para contraste
+          lineWidth: 1.5, // Aumente a espessura das linhas
+          borderDash: [5, 5], // Linhas tracejadas
+        },
+        ticks: {
+          stepSize: 10, // Ajusta os intervalos das linhas
+          color: '#333333', // Cor dos números do eixo
         },
         min: 0,
       },
