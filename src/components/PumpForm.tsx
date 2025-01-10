@@ -87,7 +87,7 @@ export function PumpForm({ onAddPump, usedColors }: PumpFormProps) {
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Vazão Máxima (m³/h)
+            Vazão Máxima (Litros/h)
           </label>
           <input
             type="number"

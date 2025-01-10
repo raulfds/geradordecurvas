@@ -102,7 +102,7 @@ export default function PumpChart({ pumps }: PumpChartProps) {
         position: 'bottom',
         title: {
           display: true,
-          text: 'Vazão (m³/h)',
+          text: 'Vazão (Litros/h)',
           padding: 10,
           color: '#333333', // Cor do título do eixo
         },
@@ -201,7 +201,7 @@ export default function PumpChart({ pumps }: PumpChartProps) {
             </tbody>
           </table>
         </div>
-        <p className="text-center text-sm text-gray-600 mt-4 ">Vazão em m³/h válida para sucção de 0 m.c.a.</p>
+        <p className="text-center text-sm text-gray-600 mt-4 ">Vazão em Litros/h válida para sucção de 0 m.c.a.</p>
       </div>
     </div>
   );
