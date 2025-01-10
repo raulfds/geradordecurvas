@@ -112,7 +112,7 @@ export function PumpForm({ onAddPump, usedColors }: PumpFormProps) {
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Vazão Mínima (m³/h) - Opcional
+            Vazão Mínima (Litros/h) - Opcional
           </label>
           <input
             type="number"
